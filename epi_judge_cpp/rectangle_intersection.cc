@@ -2,14 +2,35 @@
 #include "test_framework/fmt_print.h"
 #include "test_framework/generic_test.h"
 #include "test_framework/serialization_traits.h"
+#include <algorithm>
+using std::max;
+using std::min;
 struct Rect {
   int x, y, width, height;
 };
 
+bool is_intersecting(const Rect &r1, const Rect &r2)
+{
+  if(r1.x <= r2.x + r2.width && r1.x + r1.width >= r2.x && \
+  r1.y <= r2.y + r2.height && r1.y + r1.height >= r2.y)
+    return true;
+  
+  return false;
+}
+
 Rect IntersectRectangle(const Rect& R1, const Rect& R2) {
   // TODO - you fill in here.
-  return {0, 0, 0, 0};
+  if(!is_intersecting(R1, R2))
+  {
+  return {0, 0, -1, -1};    
+  }
+
+  Rect result = {max(R1.x, R2.x), max(R1.y, R2.y), std::min(R1.x+R1.width, R2.x+R2.width) - \
+  std::max(R1.x, R2.x), min(R1.y+R1.height , R2.y+R2.height) - max(R1.y, R2.y)};
+  return(result);
 }
+
+
 bool operator==(const Rect& r1, const Rect& r2) {
   return std::tie(r1.x, r1.y, r1.width, r1.height) ==
          std::tie(r2.x, r2.y, r2.width, r2.height);
